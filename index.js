@@ -137,7 +137,7 @@ app.get('/convert', function (req, resp) {
                         }
                     }
                     var responseObj = {
-                        "success": false,
+                        "success": true,
                         "status": "ok",
                         "from": rates[from],
                         "to": rates[to]
@@ -191,7 +191,7 @@ app.get('/convert', function (req, resp) {
                                 }
                             }
                             responseObj = {
-                                "success": false,
+                                "success": true,
                                 "status": "ok",
                                 "from": rates[from],
                                 "to": rates[to]
