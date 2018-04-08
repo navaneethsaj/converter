@@ -1,5 +1,7 @@
 const TIME_GAP = 10000;
 
+var port = process.env.PORT || 8080;
+
 var express = require('express');
 var request = require('request');
 var admin = require('firebase-admin');
@@ -76,5 +78,5 @@ app.get('/', function (req, resp) {
 
 });
 
-app.listen(3000, () => console.log('http://localhost:3000'));
+app.listen(port, () => console.log('http://localhost:'+port));
 
