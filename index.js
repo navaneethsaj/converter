@@ -1,6 +1,7 @@
-const TIME_GAP = 10000;
+const TIME_GAP = 3600*1000; // in milliseconds
 const API_KEY = "355c6fb67f8dbb3a15a103816e614daa";
-const URL = "http://data.fixer.io/api/latest?access_key=355c6fb67f8dbb3a15a103816e614daa"
+const URL = "http://data.fixer.io/api/latest?access_key=355c6fb67f8dbb3a15a103816e614daa";
+const DATAREF = "currentExchangeRate";
 
 var port = process.env.PORT || 8080;
 
@@ -19,42 +20,62 @@ admin.initializeApp({
 const app = express();
 
 app.get('/', function (req, resp) {
-    console.log("Accessed");
+    console.log("\nAccessed : "+req.url);
     //resp.send("Hello world");
     var db = admin.database();
     var ref = db.ref("/server");
 
     //Checks if DB is outdated
-    ref.on("value", function (snapshot) {
+    ref.once("value", function (snapshot) {
         var obj = snapshot.val();
         var timeNow = Date.now();
-        var timeDiff = timeNow - obj.lastUpdated ;
+        //console.log("timestamp :"+obj[DATAREF]["timestamp"]);
+        //console.log("timenow :"+timeNow);
+        var timeDiff = timeNow - obj["lastUpdated"] ;
+        //console.log("diff:"+timeDiff);
+        //console.log(timeDiff);
         if (timeDiff < TIME_GAP) {
-            resp.end("Updated0 "+timeDiff);
+            console.log("Up to date Data");
+            console.log("sending up to data , last updated (sec) : "+timeDiff/1000+", saved data from DB ");
+            resp.end(JSON.stringify(obj[DATAREF]));
+            console.log("sending finished");
             //dataBaseSender();
         }else {
-            resp.write("Outdated0 "+timeDiff);
-            updater(timeNow)
+            //resp.end("Outdated0 "+timeDiff);
+            //updater(timeNow);
+            console.log("Outdated DAta : trying to update");
+            timeUpdater(timeNow);
+            updateDBandSendJSON();
+        }
+        function updateDBandSendJSON() {
+            request({
+                url: URL,
+                json: true
+            }, function (error, response, body) {
+                console.log("DataRetrieval from fixer successful");
+                if (!error && response.statusCode === 200) {
+                    //console.log(body);
+                    ref.child(DATAREF).set(body);
+                    console.log("DatabaseUpdated: Ok");
+                    console.log("sending new data directly to client");
+                    resp.end(JSON.stringify(body));// Print the json response
+                    console.log("datasend successful");
+                }
+            });
+        }
+        function timeUpdater(time){
+            ref.child("lastUpdated").set(time, function (error) {
+                if (error) {
+                    //resp.end("error");
+                } else {
+                    //resp.write("updatedNow :" + timeNow);
+                    //resp.end();
+                    //dataBaseSender();
+                }
+            });
         }
     });
-
-    function updater(timeNow) {
-        timeUpdater(timeNow);
-        databaseUpdater();
-    }
-
-    function timeUpdater(timeNow){
-        ref.child("lastUpdated").set(timeNow, function (error) {
-            if (error) {
-                //resp.end("error");
-            } else {
-                //resp.write("updatedNow :" + timeNow);
-                //resp.end();
-                //dataBaseSender();
-            }
-        });
-    }
-
+    /*
     function databaseUpdater(){
         //Function to retrieve data and update DB
 
@@ -64,8 +85,8 @@ app.get('/', function (req, resp) {
         }, function (error, response, body) {
 
             if (!error && response.statusCode === 200) {
-                console.log(body);
-                resp.end(JSON.stringify(body));// Print the json response
+                //console.log(body);
+                //resp.end(JSON.stringify(body));// Print the json response
             }
         });
     }
