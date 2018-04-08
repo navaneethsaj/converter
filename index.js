@@ -1,4 +1,6 @@
 const TIME_GAP = 10000;
+const API_KEY = "355c6fb67f8dbb3a15a103816e614daa";
+const URL = "http://data.fixer.io/api/latest?access_key=355c6fb67f8dbb3a15a103816e614daa"
 
 var port = process.env.PORT || 8080;
 
@@ -31,14 +33,14 @@ app.get('/', function (req, resp) {
             resp.end("Updated0 "+timeDiff);
             //dataBaseSender();
         }else {
-            resp.end("Outdated0 "+timeDiff);
+            resp.write("Outdated0 "+timeDiff);
             updater(timeNow)
         }
     });
 
     function updater(timeNow) {
         timeUpdater(timeNow);
-        //databaseUpdater();
+        databaseUpdater();
     }
 
     function timeUpdater(timeNow){
@@ -53,12 +55,8 @@ app.get('/', function (req, resp) {
         });
     }
 
-    /*function databaseUpdater(URL){
+    function databaseUpdater(){
         //Function to retrieve data and update DB
-
-        var url = "http://developer.cumtd.com/api/v2.2/json/GetStop?" +
-            "key=d99803c970a04223998cabd90a741633" +
-            "&stop_id=it";
 
         request({
             url: URL,
@@ -67,10 +65,10 @@ app.get('/', function (req, resp) {
 
             if (!error && response.statusCode === 200) {
                 console.log(body);
-                resp.send(body);// Print the json response
+                resp.end(JSON.stringify(body));// Print the json response
             }
         });
-    }*/
+    }
 
     /*function dataBaseSender(){
         //Function to send data back to CLIENT
