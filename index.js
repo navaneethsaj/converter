@@ -128,12 +128,15 @@ app.get('/convert', function (req, resp) {
                 var rates = obj[DATAREF]["rates"];
                 var from = req.query.from.toUpperCase();
                 var to = req.query.to.toUpperCase();
+
+                var dividerRatio = rates[from];
+
                 //resp.end(from+" "+to);
                 //resp.end(JSON.stringify(rates));
                 if (from in rates && to in rates) {
                     for (var key in rates) {
                         if (rates.hasOwnProperty(key)) {
-                            rates[key] = rates[key] / rates[from];
+                            rates[key] = rates[key] / dividerRatio;
                         }
                     }
                     var responseObj = {
@@ -182,12 +185,15 @@ app.get('/convert', function (req, resp) {
                         var rates = body["rates"];
                         var from = req.query.from.toUpperCase();
                         var to = req.query.to.toUpperCase();
+                        
+                        var dividerRatio = rates[from];
+                        
                         //resp.end(from+" "+to);
                         //resp.end(JSON.stringify(rates));
                         if (from in rates && to in rates) {
                             for (var key in rates) {
                                 if (rates.hasOwnProperty(key)) {
-                                    rates[key] = rates[key] / rates[from];
+                                    rates[key] = rates[key] / dividerRatio;
                                 }
                             }
                             responseObj = {
@@ -277,13 +283,14 @@ app.get('/base', function (req, resp) {
                 //CODE TO CONVERT
                 var rates = obj[DATAREF]["rates"];
                 var base = req.query.cur.toUpperCase();
+                var dividerRatio = rates[base];
 
                 //resp.end(from+" "+to);
                 //resp.end(JSON.stringify(rates));
                 if (base in rates) {
                     for (var key in rates) {
                         if (rates.hasOwnProperty(key)) {
-                            rates[key] = rates[key] / rates[base];
+                            rates[key] = rates[key] / dividerRatio;
                         }
                     }
                     var responseObj = {
@@ -331,13 +338,15 @@ app.get('/base', function (req, resp) {
                         //CODE TO CONVERT
                         var rates = obj[DATAREF]["rates"];
                         var base = req.query.cur.toUpperCase();
+                        
+                        var dividerRatio = rates[base];
 
                         //resp.end(from+" "+to);
                         //resp.end(JSON.stringify(rates));
                         if (base in rates) {
                             for (var key in rates) {
                                 if (rates.hasOwnProperty(key)) {
-                                    rates[key] = rates[key] / rates[base];
+                                    rates[key] = rates[key] / dividerRatio;
                                 }
                             }
                             var responseObj = {
